@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <form id="myForm">
+        <h5>Enter your file here: </h5>
+        <input type="file" id="csvFile" accept=".csv">
+        <input type="submit" value="Submit" />
+    </form>
+    <div id="chart">
+    </div>
+    <br>
+    <details>
+        <summary>
+            Controls for this Chart
+        </summary>
+        <br>
+        <div id="timeUnits">
+            <label for="timeUnits" style="align-self: 20px">📅 Timeline units:</label>
+            <select id="timeLineUnits">
+                <option value="week">🗓 Week (Mon-Sun)</option>
+                <option value="month">🗓 Month</option>
+                <option value="day">🗓 Day</option>
+                <input type="button" value="Submit" id="timeUnitsButton" />
+            </select>
+        </div>
+        <div id="workWeeks" style="display: none;">
+            <form>
+                <label for="week">Week starting at:</label>
+                <input type="date" id="startOfWeek" name="stardOfWeek">
+                <input type="submit" value="Choose week" id="chooseWeekButton">
+            </form>
+        </div>
+        <div id="workMonhts" style="display: none;">
+            <label for="week">Choose month:</label>
+            <select id="workMonthValue">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
+                <input type="button" value="Submit" id="chooseMonthButton" />
+            </select>
+        </div>
+        <div id="workDays" style="display: none;">
+            <form>
+                <label for="fromDay" style="align-self: 20px">📅 From day:</label>
+                <input type="date" id="fromDay" name="fromDay">
+                <label for="dayToSearch" style="align-self: 20px">📅 To day:</label>
+                <input type="date" id="toDay" name="dayToSearch">
+                <input type="submit" value="Choose day" id="chooseDayButton">
+            </form>
+        </div>
+        <p>Color Palette</p>
+        <div id="colors">
+            <label for="cars" style="align-self: 20px">Finished:</label>
+            <select id="finishedColor">
+                <option class="red" value="red">Red</option>
+                <option class="red" value="blue">Blue</option>
+                <option class="red" value="green">Green</option>
+                <option class="red" value="yellow">Yellow</option>
+                <option class="red" value="purple">Purple</option>
+                <option class="red" value="orange">Orange</option>
+            </select>
+
+            <label for="cars" style="align-self: 20px"> In progress:</label>
+            <select id="inProgressColor">
+                <option class="red" value="red">Red</option>
+                <option class="red" value="blue">Blue</option>
+                <option class="red" value="green">Green</option>
+                <option class="red" value="yellow">Yellow</option>
+                <option class="red" value="purple">Purple</option>
+                <option class="red" value="orange">Orange</option>
+            </select>
+            <input type="submit" value="Choose colors" id="chooseColorButton">
+        </div>
+        <hr>
+    </details>
+    <br>
+    <br>
+    <br>
+    <table id="q-graph">
+        <caption>Quarterly Results</caption>
+        <thead id="tableHead">
+            <tr>
+                <th class="sent">Finished</th>
+                <th class="paid">In Progress</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+
+        </tbody>
+    </table>
+    <div id="ticks">
+        <div class="tick" style="height: 59px;">
+            <p>90</p>
+        </div>
+        <div class="tick" style="height: 59px;">
+            <p>70</p>
+        </div>
+        <div class="tick" style="height: 59px;">
+            <p>50</p>
+        </div>
+        <div class="tick" style="height: 50px;">
+            <p>30</p>
+        </div>
+        <div class="tick" style="height: 50px;">
+            <p>10</p>
+        </div>
+    </div>
+</body>
+
+<script>
+  solve()
+</script>
+
+</html>

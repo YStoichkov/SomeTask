@@ -1,0 +1,407 @@
+h1 {
+    font: 34px sans-serif;
+  }
+  .bar {
+    fill: #d81c3f;
+  }
+  
+  .bar:hover {
+    fill: darkgray;
+  }
+  
+  .axis {
+    font: 10px sans-serif;
+  }
+  
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+  
+  .x.axis path {
+    display: none;
+  }
+
+
+
+
+
+
+  .barcontainer {
+    position: relative;
+    border: 3px solid black;
+    border-radius: 5px 5px 0 0;
+    width: 80%;
+    margin: 0 auto;
+    min-height: 25vw;
+    max-height: 50vw;
+    min-width: 40%;
+    max-width: 60%;
+    z-index: 1;
+  }
+  
+  .barcontainerheader {
+    display: inline;
+    position: absolute;
+    width: 100%;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    background: #663399;
+    border-bottom: 3px solid black;
+    font-size: 1.5em;
+    color: white;
+    text-align: center;
+    text-shadow: 2px 2px 0 black;
+    z-index: 0;
+  }
+  
+  .bar {
+    position: absolute;
+    display: inline-block;
+    bottom: 0;
+    border: 1px solid black;
+    border-radius: 6px 6px 0 0;
+    background: #663399;
+    width: 10%;
+    text-align: center;
+    color: white;
+    text-shadow: 1px 1px 0 black;
+    box-shadow: 4px 0 8px #888;
+  }
+  
+  .barlabel {
+    position: absolute;
+    border-top: 2px solid black;
+    background: #888;
+    bottom: 0;
+    width: 100%;
+    text-shadow: 1px 1px 0px black;
+    color: white;
+  }
+  
+  .bar:nth-child(2) {
+    left: 5%;
+  }
+  
+  .bar:nth-child(3) {
+    left: 20%;
+  }
+  
+  .bar:nth-child(4) {
+    left: 35%;
+  }
+  
+  .bar:nth-child(5) {
+    left: 50%;
+  }
+  
+  .bar:nth-child(6) {
+    left: 65%;
+  }
+  
+  .bar:nth-child(7) {
+    left: 80%;
+  }
+
+
+
+
+
+
+  .bar-graph {
+    padding: 0;
+    width: 100%;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: flex-end;
+        -ms-flex-align: end;
+            align-items: flex-end;
+    height: 425px;
+    margin: 0;
+  }
+  
+  .bar-graph li {
+    display: block;
+    padding: 1.5625rem 0;
+    position: relative;
+    text-align: center;
+    vertical-align: bottom;
+    border-radius: 4px 4px 0 0;
+    max-width: 20%;
+    height: 100%;
+    margin: 0 1.8% 0 0;
+    -webkit-flex: 1 1 15%;
+        -ms-flex: 1 1 15%;
+            flex: 1 1 15%;
+  }
+  
+  .bar-graph .bar-graph-axis {
+    -webkit-flex: 1 1 8%;
+        -ms-flex: 1 1 8%;
+            flex: 1 1 8%;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+  }
+  
+  .bar-graph .bar-graph-label {
+    margin: 0;
+    background-color: none;
+    color: #8a8a8a;
+    position: relative;
+  }
+  
+  @media print, screen and (min-width: 40em) {
+    .bar-graph .bar-graph-label:before, .bar-graph .bar-graph-label:after {
+      content: "";
+      position: absolute;
+      border-bottom: 1px dashed #8a8a8a;
+      top: 0;
+      left: 0;
+      height: 50%;
+      width: 20%;
+    }
+  }
+  
+  @media print, screen and (min-width: 40em) and (min-width: 64em) {
+    .bar-graph .bar-graph-label:before, .bar-graph .bar-graph-label:after {
+      width: 30%;
+    }
+  }
+  
+  @media print, screen and (min-width: 40em) {
+    .bar-graph .bar-graph-label:after {
+      left: auto;
+      right: 0;
+    }
+  }
+  
+  .bar-graph .percent {
+    letter-spacing: -3px;
+    opacity: 0.4;
+    width: 100%;
+    font-size: 1.875rem;
+    position: absolute;
+  }
+  
+  @media print, screen and (min-width: 40em) {
+    .bar-graph .percent {
+      font-size: 3.875rem;
+    }
+  }
+  
+  .bar-graph .percent span {
+    font-size: 1.875rem;
+  }
+  
+  .bar-graph .description {
+    font-weight: 800;
+    opacity: 0.5;
+    text-transform: uppercase;
+    width: 100%;
+    font-size: 14px;
+    bottom: 20px;
+    position: absolute;
+    font-size: 1rem;
+    overflow: hidden;
+  }
+  
+  .bar-graph .bar.primary {
+    border: 1px solid #1779ba;
+    background: linear-gradient(#2196e3, #1779ba 70%);
+  }
+  
+  .bar-graph .bar.secondary {
+    border: 1px solid #767676;
+    background: linear-gradient(#909090, #767676 70%);
+  }
+  
+  .bar-graph .bar.success {
+    border: 1px solid #3adb76;
+    background: linear-gradient(#65e394, #3adb76 70%);
+  }
+  
+  .bar-graph .bar.warning {
+    border: 1px solid #ffae00;
+    background: linear-gradient(#ffbe33, #ffae00 70%);
+  }
+  
+  .bar-graph .bar.alert {
+    border: 1px solid #cc4b37;
+    background: linear-gradient(#d67060, #cc4b37 70%);
+  }
+
+
+  .bar-graph .bar-graph-axiss {
+    -webkit-flex: 1 1 8%;
+        -ms-flex: 1 1 8%;
+            flex: 1 1 8%;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: bottom;
+    -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+  }
+
+
+
+  $color-paid: #7fdbff;
+$color-sent: #39cccc;
+
+body, html {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "fira-sans-2", Verdana, sans-serif;
+}
+
+#q-graph {
+  display: block; /* fixes layout wonkiness in FF1.5 */
+  position: relative; 
+  width: 600px; 
+  height: 300px;
+  margin: 1.1em 0 0; 
+  padding: 0;
+  background: transparent;
+  font-size: 11px;
+}
+
+#q-graph caption {
+  caption-side: top; 
+  width: 600px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  top: -40px;
+  position: relative; 
+  z-index: 10;
+  font-weight: bold;
+}
+
+#q-graph tr, #q-graph th, #q-graph td { 
+  position: absolute;
+  bottom: 0; 
+  width: 150px; 
+  z-index: 2;
+  margin: 0; 
+  padding: 0;
+  text-align: center;
+}
+
+#q-graph td {
+  transition: all .3s ease;
+  
+  &:hover {
+    background-color: desaturate(#85144b, 100);
+    opacity: .9;
+    color: white;
+  }
+}
+  
+#q-graph thead tr {
+  left: 100%; 
+  top: 50%; 
+  bottom: auto;
+  margin: -2.5em 0 0 5em;}
+#q-graph thead th {
+  width: 7.5em; 
+  height: auto; 
+  padding: 0.5em 1em;
+}
+#q-graph thead th.sent {
+  top: 0; 
+  left: 0; 
+  line-height: 2;
+}
+#q-graph thead th.paid {
+  top: 2.75em; 
+  line-height: 2;
+  left: 0; 
+}
+
+#q-graph tbody tr {
+  height: 296px;
+  padding-top: 2px;
+  border-right: 1px dotted #C4C4C4; 
+  color: #AAA;
+}
+#q-graph #q1 {
+  left: 0;
+}
+#q-graph #q2 {left: 150px;}
+#q-graph #q3 {left: 300px;}
+#q-graph #q4 {left: 450px; border-right: none;}
+#q-graph tbody th {bottom: -1.75em; vertical-align: top;
+font-weight: normal; color: #333;}
+#q-graph .bar {
+  width: 60px; 
+  border: 1px solid; 
+  border-bottom: none; 
+  color: #000;
+}
+#q-graph .bar p {
+  margin: 5px 0 0; 
+  padding: 0;
+  opacity: .4;
+}
+#q-graph .sent {
+  left: 13px; 
+  background-color: $color-sent;
+  border-color: transparent;
+}
+#q-graph .paid {
+  left: 77px; 
+  background-color: $color-paid;
+  border-color: transparent;
+}
+
+
+#ticks {
+  position: relative; 
+  top: -300px; 
+  left: 2px;
+  width: 596px; 
+  height: 300px; 
+  z-index: 1;
+  margin-bottom: -300px;
+  font-size: 10px;
+  font-family: "fira-sans-2", Verdana, sans-serif;
+}
+
+#ticks .tick {
+  position: relative; 
+  border-bottom: 1px dotted #C4C4C4; 
+  width: 600px;
+}
+
+#ticks .tick p {
+  position: absolute; 
+  left: -5em; 
+  top: -0.8em; 
+  margin: 0 0 0 0.5em;
+}
+
+
+
+
+
+
+  
+  
