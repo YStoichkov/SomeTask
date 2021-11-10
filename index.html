@@ -12,7 +12,7 @@
 
 <body>
     <form id="myForm">
-        <h5>Enter your file here: </h5>
+        <h5 style="font-style: italic;">Enter your CSV file here: </h5>
         <input type="file" id="csvFile" accept=".csv">
         <input type="submit" value="Submit" />
     </form>
@@ -50,10 +50,11 @@
                 <option value="5">May</option>
                 <option value="6">June</option>
                 <option value="7">July</option>
-                <option value="8">September</option>
-                <option value="9">October</option>
-                <option value="10">November</option>
-                <option value="11">December</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
                 <input type="button" value="Submit" id="chooseMonthButton" />
             </select>
         </div>
@@ -98,8 +99,8 @@
         <caption>Quarterly Results</caption>
         <thead id="tableHead">
             <tr>
-                <th class="sent">Finished</th>
-                <th class="paid">In Progress</th>
+                <th class="sent" style="font-weight: bold;">Finished</th>
+                <th class="paid" style="font-weight: bold;">In Progress</th>
             </tr>
         </thead>
         <tbody id="tableBody">
@@ -108,25 +109,25 @@
     </table>
     <div id="ticks">
         <div class="tick" style="height: 59px;">
-            <p>90</p>
+            <p>🔢</p>
         </div>
         <div class="tick" style="height: 59px;">
-            <p>70</p>
+            <p>🔢</p>
         </div>
         <div class="tick" style="height: 59px;">
-            <p>50</p>
+            <p>🔢</p>
         </div>
         <div class="tick" style="height: 50px;">
-            <p>30</p>
+            <p>🔢</p>
         </div>
         <div class="tick" style="height: 50px;">
-            <p>10</p>
+            <p>🔢</p>
         </div>
     </div>
 </body>
 
 <script>
-  solve()
+    solve()
 </script>
 
 </html>
