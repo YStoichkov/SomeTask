@@ -2,20 +2,103 @@ function solve() {
     const myForm = document.getElementById("myForm");
     const csvFile = document.getElementById("csvFile");
     const timeUnitsButton = document.getElementById('timeUnitsButton')
+    const chooseColorButton = document.getElementById('chooseColorButton');
+    let allTasks = [];
     timeUnitsButton.addEventListener('click', mainAppController);
+    chooseColorButton.addEventListener('click', colorHandler)
 
     myForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        let h3 = document.createElement('h3');
-        h3.style.color = 'blue';
-        h3.textContent = `File uploaded`
-        document.body.appendChild(h3);
+        alert('File uploaded')
         const input = csvFile.files[0];
         const reader = new FileReader();
         reader.onload = function (e) {
             const text = e.target.result;
             const data = csvToArray(text);
             localStorage.setItem('data', JSON.stringify(data));
+
+            data.forEach(element => {
+                let elementEndDate = element[Object.keys(element)[Object.keys(element).length - 1]]
+                let elementStartDate = element['Start Date'];
+
+                if (elementStartDate?.length == 19) {
+                    let splittedElementStartDate = elementStartDate?.split('-');
+                    let startDateMonth = splittedElementStartDate[1];
+                    let startDateYear = splittedElementStartDate[0];
+                    let indexOfElement = allTasks.findIndex(x => x.month == startDateMonth && x.year == startDateYear);
+                    if (indexOfElement != -1) {
+                        allTasks[indexOfElement].startedTasks++;
+                    } else {
+                        let task = {
+                            year: startDateYear,
+                            month: startDateMonth,
+                            finishedTasks: 0,
+                            startedTasks: 1,
+                        };
+                        allTasks.push(task);
+                    }
+                }
+                if (elementEndDate?.length == 20) {
+                    let splittedElementEndDate = elementEndDate?.split('-');
+
+                    let endDateMonth = splittedElementEndDate[1];
+                    let endDateYear = splittedElementEndDate[0];
+                    let indexOfElement = allTasks.findIndex(x => x.month == endDateMonth && x.year == endDateYear);
+                    if (indexOfElement != -1) {
+                        allTasks[indexOfElement].finishedTasks++;
+                    }
+                }
+            })
+            allTasks.sort((a, b) => b.year - a.year && a.month - b.month);
+            allTasks.map(task => {
+                let { year, month, finishedTasks, startedTasks } = task;
+                let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                let monthSplitted = 0;
+                if (month.startsWith('0')) {
+                    monthSplitted = Number(month.replace('0', '')) - 1;
+                } else {
+                    monthSplitted = Number(month) - 1;
+
+                }
+                let dataBody = document.getElementById('data');
+
+                let inProgressBar = document.createElement('div');
+                inProgressBar.classList.add('bar');
+                inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
+                inProgressBar.setAttribute('id', 'inProgress');
+                inProgressBar.style.width = `${startedTasks < 8 ? startedTasks * 4.5 : startedTasks * 3}%`
+
+                let inProgressSpan = document.createElement('span');
+                inProgressSpan.classList.add('label');
+                inProgressSpan.textContent = `${months[monthSplitted]} ${year} (Started)`;
+
+                let inProgressCountSpan = document.createElement('span');
+                inProgressCountSpan.classList.add('count');
+                inProgressCountSpan.textContent = `${startedTasks}`;
+
+                inProgressBar.appendChild(inProgressSpan);
+                inProgressBar.appendChild(inProgressCountSpan);
+
+                let finishedBar = document.createElement('div');
+                finishedBar.classList.add('bar');
+                finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
+                finishedBar.setAttribute('id', 'finished');
+                finishedBar.style.width = `${finishedTasks < 8 ? finishedTasks * 4.5 : finishedTasks * 3}%`
+
+                let finishedSpan = document.createElement('span');
+                finishedSpan.classList.add('label');
+                finishedSpan.textContent = `${months[monthSplitted]} ${year} (Finished)`;
+
+                let finishedCountSpan = document.createElement('span');
+                finishedCountSpan.classList.add('count');
+                finishedCountSpan.textContent = `${finishedTasks}`;
+
+                finishedBar.appendChild(finishedSpan)
+                finishedBar.appendChild(finishedCountSpan)
+
+                dataBody.appendChild(inProgressBar);
+                dataBody.appendChild(finishedBar);
+            })
         };
         reader.readAsText(input);
     });
@@ -26,10 +109,8 @@ function solve() {
             const data = localStorage.getItem('data')
             const parsedData = JSON.parse(data);
 
-            const weekButton = document.getElementById('chooseWeekButton')
-            const monthButton = document.getElementById('chooseMonthButton')
+            const monthButton = document.getElementById('chooseMonthAndYear')
             const dayButton = document.getElementById('chooseDayButton')
-            const chooseColorButton = document.getElementById('chooseColorButton');
 
             let unit = document.getElementById('timeLineUnits');
             var value = unit.options[unit.selectedIndex].value;
@@ -44,6 +125,7 @@ function solve() {
                 monthButton.addEventListener('click', (e) => {
                     e.preventDefault();
                     let month = document.getElementById('workMonthValue').value;
+                    let year = document.getElementById('workYearValue').value;
                     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
                     let currentMonth = months[month - 1];
                     parsedData.forEach(element => {
@@ -53,19 +135,59 @@ function solve() {
                         let elementEndDateToDate = elementEndDate?.length == 20 ? new Date(elementEndDate) : undefined;
                         let elementStartDateToDate = elementStartDate?.length == 19 ? new Date(elementStartDate) : undefined;
 
-                        if (elementEndDateToDate?.getMonth() == month) {
-                            console.log(elementEndDateToDate)
+                        let monthAsNumber = Number(month);
+                        let yearAsNumber = Number(year);
+
+                        if (elementEndDateToDate?.getMonth() + 1 == monthAsNumber && elementEndDateToDate?.getFullYear() == yearAsNumber) {
                             if (elementEndDateToDate?.getDay() !== 6 && elementEndDateToDate?.getDay() !== 0) {
                                 finishedTasks++;
                             }
                         }
-                        if (elementStartDateToDate?.getMonth() == month) {
+                        if (elementStartDateToDate?.getMonth() + 1 == monthAsNumber && elementEndDateToDate?.getFullYear() == yearAsNumber) {
                             if (elementStartDateToDate?.getDay() !== 6 && elementStartDateToDate?.getDay() !== 0) {
                                 startedTasks++;
                             }
                         }
                     })
-                    createDomElement(startedTasks, finishedTasks, currentMonth)
+                    let dataBody = document.getElementById('data');
+                    dataBody.innerHTML = '';
+
+                    let inProgressBar = document.createElement('div');
+                    inProgressBar.classList.add('bar');
+                    inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
+                    inProgressBar.setAttribute('id', 'inProgress');
+                    inProgressBar.style.width = `${startedTasks <= 8 ? startedTasks * 4.5 : startedTasks * 3}%`
+
+                    let inProgressSpan = document.createElement('span');
+                    inProgressSpan.classList.add('label');
+                    inProgressSpan.textContent = `${currentMonth} ${year} (Started)`;
+
+                    let inProgressCountSpan = document.createElement('span');
+                    inProgressCountSpan.classList.add('count');
+                    inProgressCountSpan.textContent = `${startedTasks}`;
+
+                    inProgressBar.appendChild(inProgressSpan);
+                    inProgressBar.appendChild(inProgressCountSpan);
+
+                    let finishedBar = document.createElement('div');
+                    finishedBar.classList.add('bar');
+                    finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
+                    finishedBar.setAttribute('id', 'finished');
+                    finishedBar.style.width = `${finishedTasks <= 8 ? finishedTasks * 4.5 : finishedTasks * 3}%`
+
+                    let finishedSpan = document.createElement('span');
+                    finishedSpan.classList.add('label');
+                    finishedSpan.textContent = `${currentMonth} ${year} (Finished)`;
+
+                    let finishedCountSpan = document.createElement('span');
+                    finishedCountSpan.classList.add('count');
+                    finishedCountSpan.textContent = `${finishedTasks}`;
+
+                    finishedBar.appendChild(finishedSpan)
+                    finishedBar.appendChild(finishedCountSpan)
+
+                    dataBody.appendChild(inProgressBar);
+                    dataBody.appendChild(finishedBar);
                     finishedTasks = 0;
                     startedTasks = 0;
                 })
@@ -74,38 +196,142 @@ function solve() {
                 workWeeks.style.display = 'block';
                 document.getElementById('workMonhts').style.display = 'none';
                 document.getElementById('workDays').style.display = 'none';
+                let allTasks = [];
+                parsedData.forEach(element => {
+                    let elementEndDate = element[Object.keys(element)[Object.keys(element).length - 1]]
+                    let elementStartDate = element['Start Date'];
 
-                weekButton.addEventListener('click', (e) => {
+                    if (elementStartDate?.length == 19) {
+                        let startDateAsDate = new Date(elementStartDate);
+                        if (startDateAsDate?.getDay() !== 6 && startDateAsDate?.getDay() !== 0) {
+                            var oneJan = new Date(startDateAsDate.getFullYear(), 0, 1);
+                            var numberOfDays = Math.floor((startDateAsDate - oneJan) / (24 * 60 * 60 * 1000));
+                            var week = Math.ceil((startDateAsDate.getDay() + 1 + numberOfDays) / 7);
+                            let indexOfElement = allTasks.findIndex(x => x.week == week);
+                            if (indexOfElement != -1) {
+                                allTasks[indexOfElement].startedTasks++;
+                            } else {
+                                let task = {
+                                    week: week,
+                                    finishedTasks: 0,
+                                    startedTasks: 1,
+                                }
+                                allTasks.push(task);
+                            }
+                        }
+                    }
+                    if (elementEndDate?.length == 20) {
+                        let endDateAsDate = new Date(elementEndDate);
+                        if (endDateAsDate?.getDay() !== 6 && endDateAsDate?.getDay() !== 0) {
+                            var oneJan = new Date(endDateAsDate.getFullYear(), 0, 1);
+                            var numberOfDays = Math.floor((endDateAsDate - oneJan) / (24 * 60 * 60 * 1000));
+                            var week = Math.ceil((endDateAsDate.getDay() + 1 + numberOfDays) / 7);
+                            let indexOfElement = allTasks.findIndex(x => x.week == week);
+                            if (indexOfElement != -1) {
+                                allTasks[indexOfElement].finishedTasks++;
+                            }
+                        }
+                    }
+                })
+                allTasks.sort((a, b) => a.week - b.week);
+                document.getElementById('data').innerHTML = ''
+                allTasks.map(task => {
+                    let { week, finishedTasks, startedTasks } = task;
+
+                    let dataBody = document.getElementById('data');
+
+                    let inProgressBar = document.createElement('div');
+                    inProgressBar.classList.add('bar');
+                    inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
+                    inProgressBar.setAttribute('id', 'inProgress');
+                    inProgressBar.style.width = `${startedTasks < 3 ? startedTasks * 20 : startedTasks * 12}%`
+
+                    let inProgressSpan = document.createElement('span');
+                    inProgressSpan.classList.add('label');
+                    inProgressSpan.textContent = `Week: ${week} (Started)`;
+
+                    let inProgressCountSpan = document.createElement('span');
+                    inProgressCountSpan.classList.add('count');
+                    inProgressCountSpan.textContent = `${startedTasks}`;
+
+                    inProgressBar.appendChild(inProgressSpan);
+                    inProgressBar.appendChild(inProgressCountSpan);
+
+
+                    let finishedBar = document.createElement('div');
+                    finishedBar.classList.add('bar');
+                    finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
+                    finishedBar.setAttribute('id', 'finished');
+                    finishedBar.style.width = `${finishedTasks < 3 ? finishedTasks * 20 : finishedTasks * 12}%`
+
+                    let finishedSpan = document.createElement('span');
+                    finishedSpan.classList.add('label');
+                    finishedSpan.textContent = `Week ${week} (Finished)`;
+
+                    let finishedCountSpan = document.createElement('span');
+                    finishedCountSpan.classList.add('count');
+                    finishedCountSpan.textContent = `${finishedTasks}`;
+
+                    finishedBar.appendChild(finishedSpan)
+                    finishedBar.appendChild(finishedCountSpan)
+
+                    dataBody.appendChild(inProgressBar);
+                    dataBody.appendChild(finishedBar);
+                })
+
+                let chooseWeeksButton = document.getElementById('chooseWeeksButton');
+
+                chooseWeeksButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    let startOfWeek = document.getElementById('startOfWeek').value;
-                    parsedData.forEach(element => {
-                        let elementEndDate = element[Object.keys(element)[Object.keys(element).length - 1]]?.split(' ')[0];
-                        let elementStartDate = element['Start Date']?.split(' ')[0];
+                    let from = document.getElementById('fromWeek').value
 
-                        let startOfWeekInputToDate = new Date(startOfWeek);
+                    let to = document.getElementById('toWeek').value;
+                    if (from >= 1 && to <= 52) {
+                        let result = allTasks.filter(x => x.week >= Number(from) && x.week <= Number(to));
+                        document.getElementById('data').innerHTML = ''
+                        result.map(task => {
+                            let { week, finishedTasks, startedTasks } = task;
 
-                        let elementEndDateToDate = elementEndDate?.length == 10 ? new Date(elementEndDate) : undefined;
-                        let elementStartDateToDate = elementStartDate?.length == 10 ? new Date(elementStartDate) : undefined;
+                            let dataBody = document.getElementById('data');
+                            let inProgressBar = document.createElement('div');
+                            inProgressBar.classList.add('bar');
+                            inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
+                            inProgressBar.setAttribute('id', 'inProgress');
+                            inProgressBar.style.width = `${startedTasks < 3 ? startedTasks * 20 : startedTasks * 12}%`
 
-                        if (startOfWeekInputToDate.getTime() == elementStartDateToDate?.getTime()) {
-                            startedTasks++;
-                        }
-                        if (startOfWeekInputToDate.getTime() == elementEndDateToDate?.getTime()) {
-                            finishedTasks++;
-                        }
+                            let inProgressSpan = document.createElement('span');
+                            inProgressSpan.classList.add('label');
+                            inProgressSpan.textContent = `Week: ${week} (Started)`;
 
-                        for (let index = 0; index <= 4; index++) {
-                            if (startOfWeekInputToDate.setDate(startOfWeekInputToDate.getDate() + index) == elementStartDateToDate?.getTime()) {
-                                startedTasks++;
-                            }
-                            if (startOfWeekInputToDate.setDate(startOfWeekInputToDate.getDate() + index) == elementEndDateToDate?.getTime()) {
-                                finishedTasks++;
-                            }
-                        }
-                    });
-                    createDomElement(startedTasks, finishedTasks, startOfWeek)
-                    finishedTasks = 0;
-                    startedTasks = 0;
+                            let inProgressCountSpan = document.createElement('span');
+                            inProgressCountSpan.classList.add('count');
+                            inProgressCountSpan.textContent = `${startedTasks}`;
+
+                            inProgressBar.appendChild(inProgressSpan);
+                            inProgressBar.appendChild(inProgressCountSpan);
+
+
+                            let finishedBar = document.createElement('div');
+                            finishedBar.classList.add('bar');
+                            finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
+                            finishedBar.setAttribute('id', 'finished');
+                            finishedBar.style.width = `${finishedTasks < 3 ? finishedTasks * 20 : finishedTasks * 12}%`
+
+                            let finishedSpan = document.createElement('span');
+                            finishedSpan.classList.add('label');
+                            finishedSpan.textContent = `Week ${week} (Finished)`;
+
+                            let finishedCountSpan = document.createElement('span');
+                            finishedCountSpan.classList.add('count');
+                            finishedCountSpan.textContent = `${finishedTasks}`;
+
+                            finishedBar.appendChild(finishedSpan)
+                            finishedBar.appendChild(finishedCountSpan)
+
+                            dataBody.appendChild(inProgressBar);
+                            dataBody.appendChild(finishedBar);
+                        });
+                    }
                 })
             } if (value == 'day') {
                 let workDays = document.getElementById('workDays');
@@ -115,12 +341,10 @@ function solve() {
 
                 dayButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    let startDay = document.getElementById('fromDay').value;
-                    let endDay = document.getElementById('toDay').value;
-                    let startOfPeriod = new Date(startDay);
-                    let endOfPeriod = new Date(endDay);
-                    const diffTime = Math.abs(startOfPeriod - endOfPeriod);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    let selectedDay = document.getElementById('selectedDay').value;
+
+                    let selectedDayToDay = new Date(selectedDay);
+
                     parsedData.forEach(element => {
                         let elementEndDate = element[Object.keys(element)[Object.keys(element).length - 1]]?.split(' ')[0];
                         let elementStartDate = element['Start Date']?.split(' ')[0];
@@ -128,49 +352,61 @@ function solve() {
                         let elementEndDateToDate = elementEndDate?.length == 10 ? new Date(elementEndDate) : undefined;
                         let elementStartDateToDate = elementStartDate?.length == 10 ? new Date(elementStartDate) : undefined;
 
+                        if (selectedDayToDay.getTime() === elementStartDateToDate?.getTime()) {
+                            if (selectedDayToDay.getDay() !== 6 && selectedDayToDay.getDay() !== 0) {
+                                startedTasks++;
+                            }
+                        }
 
-                        if (startOfPeriod.getTime() == elementStartDateToDate?.getTime()) {
-                            startedTasks++;
-                        }
-                        if (startOfPeriod.getTime() == elementEndDateToDate?.getTime()) {
-                            finishedTasks++;
-                        }
-                        for (let index = 0; index <= diffDays; index++) {
-                            if (startOfPeriod.setDate(startOfPeriod.getDate() + index) == elementStartDateToDate?.getTime()) {
-                                if (elementStartDateToDate?.getDay() !== 6 && elementStartDateToDate?.getDay() !== 0) {
-                                    startedTasks++;
-                                }
-                            }
-                            if (startOfPeriod.setDate(startOfPeriod.getDate() + index) == elementEndDateToDate?.getTime()) {
-                                if (elementEndDateToDate?.getDay() !== 6 && elementEndDateToDate?.getDay() !== 0) {
-                                    finishedTasks++;
-                                }
+                        if (selectedDayToDay.getTime() === elementEndDateToDate?.getTime()) {
+                            if (selectedDayToDay.getDay() !== 6 && selectedDayToDay.getDay() !== 0) {
+                                finishedTasks++;
                             }
                         }
-                    });
-                    createDomElement(startedTasks, finishedTasks, startDay, endDay)
+                    })
+                    let dataBody = document.getElementById('data');
+                    dataBody.innerHTML = '';
+
+                    let inProgressBar = document.createElement('div');
+                    inProgressBar.classList.add('bar');
+                    inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
+                    inProgressBar.setAttribute('id', 'inProgress');
+                    inProgressBar.style.width = `${startedTasks * 35}%`
+
+                    let inProgressSpan = document.createElement('span');
+                    inProgressSpan.classList.add('label');
+                    inProgressSpan.textContent = `${selectedDay} (Started)`;
+
+                    let inProgressCountSpan = document.createElement('span');
+                    inProgressCountSpan.classList.add('count');
+                    inProgressCountSpan.textContent = `${startedTasks}`;
+
+                    inProgressBar.appendChild(inProgressSpan);
+                    inProgressBar.appendChild(inProgressCountSpan);
+
+                    let finishedBar = document.createElement('div');
+                    finishedBar.classList.add('bar');
+                    finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
+                    finishedBar.setAttribute('id', 'finished');
+                    finishedBar.style.width = `${finishedTasks * 35}%`
+
+                    let finishedSpan = document.createElement('span');
+                    finishedSpan.classList.add('label');
+                    finishedSpan.textContent = `${selectedDay} (Finished)`;
+
+                    let finishedCountSpan = document.createElement('span');
+                    finishedCountSpan.classList.add('count');
+                    finishedCountSpan.textContent = `${finishedTasks}`;
+
+                    finishedBar.appendChild(finishedSpan)
+                    finishedBar.appendChild(finishedCountSpan)
+
+                    dataBody.appendChild(inProgressBar);
+                    dataBody.appendChild(finishedBar);
                     finishedTasks = 0;
                     startedTasks = 0;
                 })
             }
-            chooseColorButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                let finishedValue = document.getElementById('finishedColor').value;
-                let inProgressColorValue = document.getElementById('inProgressColor').value;
-
-                let finishedBar = document.querySelectorAll('td')[0];
-                finishedBar.style.backgroundColor = finishedValue;
-
-                let inProgressBar = document.querySelectorAll('td')[1];
-                inProgressBar.style.backgroundColor = inProgressColorValue;
-
-
-                let finishedTitle = document.querySelectorAll('th')[0];
-                finishedTitle.style.color = finishedValue;
-
-                let inProgressTitle = document.querySelectorAll('th')[1];
-                inProgressTitle.style.color = inProgressColorValue;
-            })
         })
     }
 
@@ -188,41 +424,20 @@ function solve() {
         return arr;
     }
 
-    function createDomElement(startedTasks, finishedTasks, start, end) {
-        document.getElementById('tableBody').innerHTML = '';
-        let tableBody = document.getElementById('tableBody');
-        let tr = document.createElement('tr');
-        tr.classList.add('qtr');
-        tr.setAttribute('id', 1);
+    function colorHandler() {
+        let finishedValue = document.getElementById('finishedColor').value;
+        let inProgressColorValue = document.getElementById('inProgressColor').value;
 
-        let th = document.createElement('th');
-        th.textContent = `From ${start}${end == undefined ? '' : ` to ${end}`}`
-
-        let startedTasksTd = document.createElement('td');
-        startedTasksTd.classList.add('sent', 'bar');
-        startedTasksTd.style.marginBottom = `10px`;
-        startedTasksTd.innerHTML = `<p>${startedTasks}</p>`
-
-        let finishedTasksTd = document.createElement('td');
-        finishedTasksTd.style.marginBottom = `10px`;
-        finishedTasksTd.classList.add('paid', 'bar');
-        finishedTasksTd.innerHTML = `<p>${finishedTasks}</p>`
-
-        if (startedTasks > finishedTasks) {
-            startedTasksTd.style.height = `111px`;
-            finishedTasksTd.style.height = `90px`;
-        }
-        if (startedTasks < finishedTasks) {
-            startedTasksTd.style.height = `90px`;
-            finishedTasksTd.style.height = `120px`;
-        }
-        if (startedTasks == finishedTasks) {
-            startedTasksTd.style.height = `111px`;
-            finishedTasksTd.style.height = `111px`;
-        }
-        tr.appendChild(th);
-        tr.appendChild(startedTasksTd);
-        tr.appendChild(finishedTasksTd);
-        tableBody.appendChild(tr);
+        let allData = document.getElementById('data');
+        let children = allData.childNodes;
+        children.forEach(child => {
+            if (child.id == 'inProgress') {
+                child.style.backgroundColor = inProgressColorValue;
+            }
+            if (child.id == 'finished') {
+                child.style.backgroundColor = finishedValue;
+            }
+        })
     }
+    allTasks = [];
 }
