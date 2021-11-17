@@ -58,15 +58,23 @@ function solve() {
                     monthSplitted = Number(month.replace('0', '')) - 1;
                 } else {
                     monthSplitted = Number(month) - 1;
-
                 }
                 let dataBody = document.getElementById('data');
+
+                let startedTasksHeight = 50;
+                let finishedTasksHeight = 50;
+                if (startedTasks > finishedTasks) {
+                    finishedTasksHeight = 40;
+                }
+                if (startedTasks < finishedTasks) {
+                    startedTasksHeight = 40;
+                }
 
                 let inProgressBar = document.createElement('div');
                 inProgressBar.classList.add('bar');
                 inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
                 inProgressBar.setAttribute('id', 'inProgress');
-                inProgressBar.style.width = `${startedTasks < 8 ? startedTasks * 4.5 : startedTasks * 3}%`
+                inProgressBar.style.width = `${startedTasksHeight}%`
 
                 let inProgressSpan = document.createElement('span');
                 inProgressSpan.classList.add('label');
@@ -83,7 +91,7 @@ function solve() {
                 finishedBar.classList.add('bar');
                 finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
                 finishedBar.setAttribute('id', 'finished');
-                finishedBar.style.width = `${finishedTasks < 8 ? finishedTasks * 4.5 : finishedTasks * 3}%`
+                finishedBar.style.width = `${finishedTasksHeight}%`
 
                 let finishedSpan = document.createElement('span');
                 finishedSpan.classList.add('label');
@@ -152,11 +160,20 @@ function solve() {
                     let dataBody = document.getElementById('data');
                     dataBody.innerHTML = '';
 
+                    let startedTasksHeight = 50;
+                    let finishedTasksHeight = 50;
+                    if (startedTasks > finishedTasks) {
+                        finishedTasksHeight = 40;
+                    }
+                    if (startedTasks < finishedTasks) {
+                        startedTasksHeight = 40;
+                    }
+
                     let inProgressBar = document.createElement('div');
                     inProgressBar.classList.add('bar');
                     inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
                     inProgressBar.setAttribute('id', 'inProgress');
-                    inProgressBar.style.width = `${startedTasks <= 8 ? startedTasks * 4.5 : startedTasks * 3}%`
+                    inProgressBar.style.width = `${startedTasksHeight}%`
 
                     let inProgressSpan = document.createElement('span');
                     inProgressSpan.classList.add('label');
@@ -173,7 +190,7 @@ function solve() {
                     finishedBar.classList.add('bar');
                     finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
                     finishedBar.setAttribute('id', 'finished');
-                    finishedBar.style.width = `${finishedTasks <= 8 ? finishedTasks * 4.5 : finishedTasks * 3}%`
+                    finishedBar.style.width = `${finishedTasksHeight}%`
 
                     let finishedSpan = document.createElement('span');
                     finishedSpan.classList.add('label');
@@ -204,9 +221,19 @@ function solve() {
                     if (elementStartDate?.length == 19) {
                         let startDateAsDate = new Date(elementStartDate);
                         if (startDateAsDate?.getDay() !== 6 && startDateAsDate?.getDay() !== 0) {
-                            var oneJan = new Date(startDateAsDate.getFullYear(), 0, 1);
-                            var numberOfDays = Math.floor((startDateAsDate - oneJan) / (24 * 60 * 60 * 1000));
-                            var week = Math.ceil((startDateAsDate.getDay() + 1 + numberOfDays) / 7);
+                            // var oneJan = new Date(startDateAsDate.getFullYear(), 0, 1);
+                            // var numberOfDays = Math.floor((startDateAsDate - oneJan) / (24 * 60 * 60 * 1000));
+                            // var week = Math.ceil((startDateAsDate.getDay() + 1 + numberOfDays) / 7);
+                            var tdt = new Date(startDateAsDate);
+                            var dayn = (startDateAsDate.getDay() + 6) % 7;
+                            tdt.setDate(tdt.getDate() - dayn + 3);
+                            var firstThursday = tdt.valueOf();
+                            tdt.setMonth(0, 1);
+                            if (tdt.getDay() !== 4) {
+                                tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+                            }
+                            var week = 1 + Math.ceil((firstThursday - tdt) / 604800000);
+
                             let indexOfElement = allTasks.findIndex(x => x.week == week);
                             if (indexOfElement != -1) {
                                 allTasks[indexOfElement].startedTasks++;
@@ -223,9 +250,18 @@ function solve() {
                     if (elementEndDate?.length == 20) {
                         let endDateAsDate = new Date(elementEndDate);
                         if (endDateAsDate?.getDay() !== 6 && endDateAsDate?.getDay() !== 0) {
-                            var oneJan = new Date(endDateAsDate.getFullYear(), 0, 1);
-                            var numberOfDays = Math.floor((endDateAsDate - oneJan) / (24 * 60 * 60 * 1000));
-                            var week = Math.ceil((endDateAsDate.getDay() + 1 + numberOfDays) / 7);
+                            // var oneJan = new Date(endDateAsDate.getYear(), 0, 1);
+                            // var numberOfDays = Math.floor((endDateAsDate - oneJan) / (24 * 60 * 60 * 1000));
+                            // var week = Math.ceil((endDateAsDate.getDay() + 1 + numberOfDays) / 7);
+                            var tdt = new Date(endDateAsDate);
+                            var dayn = (endDateAsDate.getDay() + 6) % 7;
+                            tdt.setDate(tdt.getDate() - dayn + 3);
+                            var firstThursday = tdt.valueOf();
+                            tdt.setMonth(0, 1);
+                            if (tdt.getDay() !== 4) {
+                                tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+                            }
+                            var week = 1 + Math.ceil((firstThursday - tdt) / 604800000);
                             let indexOfElement = allTasks.findIndex(x => x.week == week);
                             if (indexOfElement != -1) {
                                 allTasks[indexOfElement].finishedTasks++;
@@ -237,14 +273,21 @@ function solve() {
                 document.getElementById('data').innerHTML = ''
                 allTasks.map(task => {
                     let { week, finishedTasks, startedTasks } = task;
-
+                    let startedTasksHeight = 50;
+                    let finishedTasksHeight = 50;
+                    if (startedTasks > finishedTasks) {
+                        finishedTasksHeight = 40;
+                    }
+                    if (startedTasks < finishedTasks) {
+                        startedTasksHeight = 40;
+                    }
                     let dataBody = document.getElementById('data');
 
                     let inProgressBar = document.createElement('div');
                     inProgressBar.classList.add('bar');
                     inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
                     inProgressBar.setAttribute('id', 'inProgress');
-                    inProgressBar.style.width = `${startedTasks < 3 ? startedTasks * 20 : startedTasks * 12}%`
+                    inProgressBar.style.width = `${startedTasksHeight}%`
 
                     let inProgressSpan = document.createElement('span');
                     inProgressSpan.classList.add('label');
@@ -262,7 +305,7 @@ function solve() {
                     finishedBar.classList.add('bar');
                     finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
                     finishedBar.setAttribute('id', 'finished');
-                    finishedBar.style.width = `${finishedTasks < 3 ? finishedTasks * 20 : finishedTasks * 12}%`
+                    finishedBar.style.width = `${finishedTasksHeight}%`
 
                     let finishedSpan = document.createElement('span');
                     finishedSpan.classList.add('label');
@@ -292,12 +335,21 @@ function solve() {
                         result.map(task => {
                             let { week, finishedTasks, startedTasks } = task;
 
+                            let startedTasksHeight = 50;
+                            let finishedTasksHeight = 50;
+                            if (startedTasks > finishedTasks) {
+                                finishedTasksHeight = 40;
+                            }
+                            if (startedTasks < finishedTasks) {
+                                startedTasksHeight = 40;
+                            }
+
                             let dataBody = document.getElementById('data');
                             let inProgressBar = document.createElement('div');
                             inProgressBar.classList.add('bar');
                             inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
                             inProgressBar.setAttribute('id', 'inProgress');
-                            inProgressBar.style.width = `${startedTasks < 3 ? startedTasks * 20 : startedTasks * 12}%`
+                            inProgressBar.style.width = `${startedTasksHeight}%`
 
                             let inProgressSpan = document.createElement('span');
                             inProgressSpan.classList.add('label');
@@ -315,7 +367,7 @@ function solve() {
                             finishedBar.classList.add('bar');
                             finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
                             finishedBar.setAttribute('id', 'finished');
-                            finishedBar.style.width = `${finishedTasks < 3 ? finishedTasks * 20 : finishedTasks * 12}%`
+                            finishedBar.style.width = `${finishedTasksHeight}%`
 
                             let finishedSpan = document.createElement('span');
                             finishedSpan.classList.add('label');
@@ -367,11 +419,20 @@ function solve() {
                     let dataBody = document.getElementById('data');
                     dataBody.innerHTML = '';
 
+                    let startedTasksHeight = 50;
+                    let finishedTasksHeight = 50;
+                    if (startedTasks > finishedTasks) {
+                        finishedTasksHeight = 40;
+                    }
+                    if (startedTasks < finishedTasks) {
+                        startedTasksHeight = 40;
+                    }
+
                     let inProgressBar = document.createElement('div');
                     inProgressBar.classList.add('bar');
                     inProgressBar.setAttribute('data-percent', `${startedTasks}%`);
                     inProgressBar.setAttribute('id', 'inProgress');
-                    inProgressBar.style.width = `${startedTasks * 35}%`
+                    inProgressBar.style.width = `${startedTasksHeight}%`
 
                     let inProgressSpan = document.createElement('span');
                     inProgressSpan.classList.add('label');
@@ -388,7 +449,7 @@ function solve() {
                     finishedBar.classList.add('bar');
                     finishedBar.setAttribute('data-percent', `${finishedTasks}%`);
                     finishedBar.setAttribute('id', 'finished');
-                    finishedBar.style.width = `${finishedTasks * 35}%`
+                    finishedBar.style.width = `${finishedTasksHeight}%`
 
                     let finishedSpan = document.createElement('span');
                     finishedSpan.classList.add('label');
